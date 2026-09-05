@@ -112,7 +112,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,'SF P
 <script>
 (function(){
 var ST={INTRO:'INTRO',P1:'P1',P2:'P2',P3:'P3',P4:'P4',P5:'P5',P6:'P6',EW:'EW',EA:'EA',EB:'EB',EC:'EC',HE:'HE'};
-var el={ov:document.getElementById('overlay'),st:document.getElementById('status-time'),nc:document.getElementById('nav-contact'),ma:document.getElementById('messages-area'),mi:document.getElementById('message-input'),sb:document.getElementById('send-btn'),cc:document.getElementById('choice-container'),cr:document.getElementById('choice-remember'),cf:document.getElementById('choice-forget'),ib:document.getElementById('input-bar'),gc:document.getElementById('game-container')};
+var el={ov:document.getElementById('overlay'),st:document.getElementById('status-time'),nc:document.getElementById('nav-contact'),ma:document.getElementById('messages-area'),mi:document.getElementById('message-input'),sb:document.getElementById('send-btn'),cc:document.getElementById('choice-container'),cr:document.getElementById('choice-remember'),cf:document.getElementById('choice-forget'),ib:document.getElementById('input-bar'),gc:document.getElementById('game-container'),bat:document.getElementById('status-battery')};
 var cs=null,p1c=0,p2c=0,p3c=0,lastTime=Date.now(),silTimer=null,ewTimer=null,mid=0,locked=false,ended=false,eaMode=false,hiddenStart=-1,navGlitchTimer=null,idleTimer=null,idlePhase=null,idleNudge1=false,idleNudge2=false,leftFlag=false,nameSpell='',lastReplyLen=0,warm=false,named=false,weak=false,p4Stage='name',p5Stage='intro',p5Replies=0,p5Panic=false,stablePath=false,p5IdleTimer=null,p5HiddenAt=-1,eaReplied=false,eaDone=false;
 var KEY_F='hyakki_forgot';
 var GCHAR='龘魑魅魍鬽傀魈魂魄幽冥暗昧影煞瘆饕餮影忘消見君名字あいうえお';
@@ -317,9 +317,14 @@ setTimeout(function(){addTyping(2000,false).then(function(){addMsg('怖い？…
 function rP4(){
 lockIn();
 seq(['ねえ。\n（呐。）','僕に名前をつけて。\n（给我起个名字。）','君がつけた名前なら、僕はもっと強く「在る」ことができる。僕を、君のものにして。\n（如果是你起的名字，我就能更强烈地"存在"。让我变成你的东西。）'],1200,100);
-setTimeout(function(){addTyping(1200,false).then(function(){el.mi.placeholder='请输入他的名字……';unLock();resetIdle();startIdle()})},4800)}
+setTimeout(function(){addTyping(1200,false).then(function(){el.mi.placeholder='你叫：＿＿＿（输入「你叫：名字」）';unLock();resetIdle();startIdle()})},4800)}
 function p4Name(text){
-nameSpell=text.trim();named=true;setWarm(true);
+var t=(text||'').trim();
+var ci=t.lastIndexOf('叫');
+if(ci>=0){
+var after=t.slice(ci+1).replace(/^[\s:：,.，。]+/,'');
+if(after)t=after;}
+nameSpell=t;named=true;setWarm(true);
 lockIn();resetIdle();
 var nm=nameSpell;
 el.nc.textContent=nm;updateNC();
@@ -719,7 +724,19 @@ leftFlag=true;
 setTimeout(function(){if(!ended&&(cs===ST.P1||cs===ST.P2||cs===ST.P3||cs===ST.P4)){addMsg('……あ、戻ってきた？\n（……啊，你回来了？）','others');addMsg('見えなくなると、僕の体が薄くなる。戻ってきてくれて、よかった。\n（看不见你的时候，我的身体就会变淡。你回来了，真好。）','others');addMsg('もう、どこにも行かないで。お願い。\n（别再，去任何地方了。求你了。）','others')}},700)}}
 }});
 function updateST(){var n=new Date();var m=n.getMinutes();el.st.textContent=n.getHours()+':'+(m<10?'0'+m:m)}
+function setBattery(pct,charging){if(el.bat)el.bat.textContent=(charging?'⚡ ':'🔋 ')+Math.round(pct)+'%'}
+function initBattery(){
+var nb=navigator.getBattery;
+if(!nb)return;
+try{
+nb.call(navigator).then(function(b){
+var upd=function(){setBattery(b.level*100,b.charging)};
+upd();
+try{b.addEventListener('levelchange',upd);b.addEventListener('chargingchange',upd)}catch(e){}
+}).catch(function(){})
+}catch(e){}}
 function init(){
+initBattery();
 updateST();setInterval(updateST,1000);
 lockIn();
 el.mi.placeholder='iMessage';
