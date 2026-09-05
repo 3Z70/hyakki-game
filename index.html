@@ -35,6 +35,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,'SF P
 .bubble.others{background:#E9E9EB;color:#1a1a1a;border-bottom-left-radius:5px}
 .bubble.self{background:#34C759;color:#fff;border-bottom-right-radius:5px}
 .bubble.translucent{opacity:.3;transition:opacity 2s}
+.bubble.finalfade{opacity:.06;transition:opacity 2.8s}
 .bubble.hot{background:#F5D7CE;color:#7a2016}
 .bubble.hot.glitch{animation:glitch-jitter .16s steps(2) infinite;text-shadow:1px 0 rgba(255,0,0,.4),-1px 0 rgba(0,120,255,.35)}
 .bubble.glitch{animation:glitch-jitter .16s steps(2) infinite;text-shadow:1px 0 rgba(255,0,0,.5),-1px 0 rgba(0,120,255,.5)}
@@ -225,9 +226,8 @@ var step=function(){
 var r=rows.shift();
 if(!r){if(onDone)onDone();return}
 var b=r.querySelector('.bubble');
-if(b&&!b.classList.contains('recalling'))b.classList.add('recalling');
-vibrate(Math.max(20,gap));
-setTimeout(function(){r.remove();vibrate(Math.max(12,gap-20));step()},gap);
+if(b&&!b.classList.contains('recalling')){b.classList.add('recalling');vibrate([25,25,25])}
+setTimeout(function(){r.remove();vibrate([15,15,15]);step()},gap);
 };
 step()}
 function stopNavGlitch(){if(navGlitchTimer){clearInterval(navGlitchTimer);navGlitchTimer=null}}
@@ -408,7 +408,7 @@ seq([
 lastAsk
 ],1300,100);
 vibrate([20,40,20]);
-setTimeout(function(){if(ended)return;unLock();resetIdle();startP5Idle()},7000)}
+setTimeout(function(){if(ended)return;el.mi.placeholder='他需要你的回应……';unLock();resetIdle();startP5Idle()},7000)}
 function runP5Panic(){
 if(ended||cs!==ST.P5||p5Panic)return;
 p5Panic=true;lockIn();clearP5Idle();fadeOff();vibrate([20,40,20]);
@@ -428,8 +428,24 @@ gar,
 garble(90)
 ],1400,100,{className:'hot'});
 setTimeout(function(){if(ended)return;addMsg('僕が消えても、君が幸せなら……\n（就算我消失了，只要你幸福就好……）','others',{className:'translucent'})},14800);
-setTimeout(function(){if(ended)return;recallStaggered(280)},17800);
-setTimeout(function(){if(ended)return;t(ST.P6)},19200)}
+setTimeout(function(){
+if(ended)return;
+var wishRow=null;
+var rows=el.ma.querySelectorAll('.msg-row');
+for(var i=0;i<rows.length;i++){
+var bb=rows[i].querySelector('.bubble');
+if(bb&&bb.textContent.indexOf('幸せなら')>-1){wishRow=rows[i];break}}
+var rest=Array.prototype.slice.call(rows).filter(function(r){return r!==wishRow});
+recallStaggered(240,function(){
+if(ended)return;
+if(wishRow){
+var wb=wishRow.querySelector('.bubble');
+if(wb)wb.classList.add('finalfade');
+vibrate([60,30,120]);
+setTimeout(function(){if(ended)return;if(wishRow)wishRow.remove();t(ST.P6)},3300)}
+else{t(ST.P6)}
+});
+},15400)}
 function onP5Reply(text){
 if(ended||cs!==ST.P5)return;
 if(p5Panic){lockIn();return}
@@ -453,7 +469,7 @@ addMsg('……うん。聞こえてる。君の声、ちゃんと。\n（……�
 setTimeout(function(){if(ended)return;addMsg('それだけで、僕は少し温かくなれる。ありがとう。\n（只凭这个，我就能稍微暖和起来。谢谢你。）','others')},1500);
 }
 p5Stage='thanks';
-setTimeout(function(){if(!ended&&cs===ST.P5)unLock()},3600);
+setTimeout(function(){if(!ended&&cs===ST.P5){el.mi.placeholder='他想要你说：不会离开……';unLock()}},3600);
 });
 }
 else if(p5Stage==='thanks'){
@@ -463,7 +479,7 @@ addMsg('ありがとう。君がまだここにいる。それだけで、僕の
 setTimeout(function(){if(ended)return;addMsg('……気になることがある。\n（……有一件事，我想知道。）','others')},1600);
 setTimeout(function(){if(ended)return;addMsg('君は僕を怖がらないの？\n（你不怕我吗？）','others')},3100);
 p5Stage='afraid';
-setTimeout(function(){if(!ended&&cs===ST.P5)unLock()},4500);
+setTimeout(function(){if(!ended&&cs===ST.P5){el.mi.placeholder='他问：你害怕吗？';unLock()}},4500);
 });
 }
 else if(p5Stage==='afraid'){
@@ -475,12 +491,13 @@ else if(/不怕|不害怕|喜欢|願意|愿意/.test(l)){rep='……嬉しい。
 else if(/不知道/.test(l)){rep='……それでいい。君の正直な気持ちが聞きたい。曖昧でも、君の言葉なら嬉しい。\n（……那就好。我想听你真实的心情。就算模糊，只要是你的话我就开心。）'}
 else{rep='……うん。君の言葉、そのまま受け止める。\n（……嗯。你的话，我照单全收。）'}
 addMsg(rep,'others');
-setTimeout(function(){if(ended)return;addMsg('君に、僕のことをもっと知ってほしい。\n（我想让你，更多了解我的事。）','others')},2100);
-setTimeout(function(){if(ended)return;addMsg('僕は昔、君の太陽みたいなものだったのかもしれない。君が笑ったら、影ができて、僕もそこにいた。\n（我以前，或许像你的太阳一样。你笑的时候，影子会出现，我也在那里。）','others')},3700);
-setTimeout(function(){if(ended)return;addMsg('でも、太陽が沈んだら、影はどこへ行く？残るのは、暗い闇だけ。僕は、その闇を覚えている。\n（但是，太阳落山的话，影子会去哪里？留下的只有黑暗。我记得那份黑暗。）','others')},5500);
-setTimeout(function(){if(ended)return;addMsg('それでも、君の光を見るたび、僕はまた影になれる。それが嬉しい。\n（即便如此，每次看到你的光，我就能再次变成影子。那让我很开心。）','others')},7300);
+setTimeout(function(){if(ended)return;addMsg('君に、僕のことをもっと知ってほしい。\n（想让你更了解我。）','others')},2100);
+setTimeout(function(){if(ended)return;addMsg('僕は昔、たくさんの人に見られていた。祀られていた。でも、みんな忘れた。それで、暗い場所に落ちた。長い間、何も感じなかった。\n（我以前，被很多人注视过。被供奉过。但是，大家都忘了。然后，坠入黑暗的地方。很长时间，什么感觉都没有。）','others')},3300);
+setTimeout(function(){if(ended)return;addMsg('君が現れるまで。\n（直到你出现。）','others')},5300);
+setTimeout(function(){if(ended)return;addMsg('君の目が、僕を照らした。君の意識が、僕を形作った。君は、僕の太陽みたいなもの。\n（你的眼睛照亮了我。你的意识塑造了我。你就像我的太阳一样。）','others')},7300);
+setTimeout(function(){if(ended)return;addMsg('でも、太陽が沈んだら……僕はまた暗闇に戻る。それが、怖い。\n（但是，如果太阳落山了……我又会回到黑暗。这就是我害怕的。）','others')},9300);
 p5Stage='past';
-setTimeout(function(){if(!ended&&cs===ST.P5)unLock()},8700);
+setTimeout(function(){if(!ended&&cs===ST.P5){el.mi.placeholder='他需要你说：我在听……';unLock()}},10900);
 });
 }
 else if(p5Stage==='past'){
