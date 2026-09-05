@@ -486,9 +486,14 @@ else if(p5Stage==='afraid'){
 addTyping(2000,false).then(function(){
 if(ended||cs!==ST.P5)return;
 var rep;
-if(/怕|害怕|怖/.test(l)){rep='……怖がらせてごめん。でも、君が怖がっても、離れたくない。\n（……让你害怕了，对不起。但是，就算你害怕，我也不想离开。）'}
-else if(/不怕|不害怕|喜欢|願意|愿意/.test(l)){rep='……嬉しい。それが、僕にとって一番の言葉。\n（……好开心。那对我来说，是最好的话。）'}
-else if(/不知道/.test(l)){rep='……それでいい。君の正直な気持ちが聞きたい。曖昧でも、君の言葉なら嬉しい。\n（……那就好。我想听你真实的心情。就算模糊，只要是你的话我就开心。）'}
+var m=/(害怕|怕|怖|吓人|恐怖|吓)/.exec(l);
+var pleasant=false,wantFear=false;
+if(m){
+var bef=l.slice(Math.max(0,m.index-4),m.index);
+if(/不|没|無|无|别/.test(bef)){pleasant=true}else{wantFear=true}}
+if(pleasant||/喜欢|好き|願意|愿意|好/.test(l)){rep='……嬉しい。それが、僕にとって一番の言葉。\n（……好开心。那对我来说，是最好的话。）'}
+else if(wantFear){rep='……怖がらせてごめん。でも、君が怖がっても、離れたくない。\n（……让你害怕了，对不起。但是，就算你害怕，我也不想离开。）'}
+else if(/不知道|不确定/.test(l)){rep='……それでいい。君の正直な気持ちが聞きたい。曖昧でも、君の言葉なら嬉しい。\n（……那就好。我想听你真实的心情。就算模糊，只要是你的话我就开心。）'}
 else{rep='……うん。君の言葉、そのまま受け止める。\n（……嗯。你的话，我照单全收。）'}
 addMsg(rep,'others');
 setTimeout(function(){if(ended)return;addMsg('君に、僕のことをもっと知ってほしい。\n（想让你更了解我。）','others')},2100);
