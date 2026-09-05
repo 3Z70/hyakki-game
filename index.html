@@ -451,7 +451,7 @@ for(var i=0;i<rows.length;i++){
 var bb=rows[i].querySelector('.bubble');
 if(bb&&bb.textContent.indexOf('幸せなら')>-1){wishRow=rows[i];break}}
 var rest=Array.prototype.slice.call(rows).filter(function(r){return r!==wishRow});
-recallStaggered(240,function(){
+recallStaggered(100,function(){
 if(ended)return;
 if(wishRow){
 var wb=wishRow.querySelector('.bubble');
