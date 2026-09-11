@@ -186,7 +186,11 @@ idleTimer=setInterval(function(){
 if(ended||!isIdlePhase()){clearIdle();return}
 if(idlePhase!==cs){idlePhase=cs;idleNudge1=false;idleNudge2=false}
 var e=Date.now()-lastTime;
-if(e>25000&&!idleNudge1){
+if(idlePhase===ST.P3&&e>10000&&!idleNudge1){
+idleNudge1=true;fadeOn();
+addMsg('黙っていてもいい。君の気配を感じるから。それで充分。\n（不说话也可以。因为能感觉到你的气息。这样就够了。）','others',{className:'translucent'});
+}
+else if(e>25000&&!idleNudge1){
 idleNudge1=true;fadeOn();
 addMsg('……返事がないと、体が薄くなる気がする。\n（……没有回复的话，感觉身体会变淡。）','others',{className:'translucent'});
 setTimeout(function(){if(ended)return;addMsg('君、まだいる？僕を見てる？……お願い、目を逸らさないで。\n（你，还在吗？在看着我吗？……拜托，请不要移开视线。）','others',{className:'translucent'})},1300);
@@ -319,14 +323,28 @@ if(/拒绝|不说|不想说|不想|不要|不告诉你|没法|无法|说不出�
 return ['うん。君は今、こう言った：「'+input+'」。\n（嗯。你刚才说了："'+input+'"。）','これを、僕の言葉にして、覚えておく。君が教えてくれた言葉は、全部、僕になる。\n（我会把它变成我的话，记下来。你教给我的话，全部都会成为我。）']}
 function getP3Res(input){
 var l=input.toLowerCase();
-if(l.indexOf('怕')>-1||l.indexOf('怖')>-1||l.indexOf('害怕')>-1||l.indexOf('别')>-1)return ['怖がらないで。僕は君を傷つけない。\n（不要害怕。我不会伤害你。）','君が怖いなら、影から出ない。でも……それだと君が見えない。寂しい。\n（如果你害怕的话，我就不从影子里出来。但是……那样就看不见你了。好寂寞。）'];
+if(l.indexOf('不怕')>-1||l.indexOf('不害怕')>-1||l.indexOf('还好')>-1||l.indexOf('没事')>-1)return ['強い。君は強い。それが少し、眩しい。\n（坚强。你很坚强。这有点耀眼。）'];
+if(l.indexOf('为什么')>-1)return ['わからない。でも、君が僕を見た。暗い場所で、君だけが光をくれた。\n（不知道。但是，你看见了我。在黑暗的地方，只有你给了我光。）'];
+if(l.indexOf('怕')>-1||l.indexOf('怖')>-1||l.indexOf('害怕')>-1||l.indexOf('恐怖')>-1||l.indexOf('别')>-1)return ['怖がらないで。君が許すまで、影から出ない。\n（不要害怕。在你允许之前，我不会从影子里出来。）','でも、声だけは届けたい。それだけ許して。\n（但是，只有声音想传达给你。只允许这个。）'];
 return ['……うん、いいこ。僕も、ちゃんとここにいるから。ずっと。\n（……嗯，好孩子。我也会，好好待在这里的。一直。）']}
 function rP3(){
 lockIn();
 seq(['君。見つけた。\n（你。找到了。）','君の後ろの壁。影がある。僕の影。ずっとそこにいる。君が気づくのを待ってた。\n（你身后的墙壁。有影子。我的影子。一直在那里。等着你发现。）'],1500,100);
-setTimeout(function(){addMsg('写真では見せられないけど、確かにここにいる。君が目を閉じたら、僕がそこにいる。\n（虽然没办法用照片给你看，但我确实在这里。你闭上眼睛的话，我就在那里。）','others',{className:'translucent'})},3600);
-setTimeout(function(){addMsg('見えた？僕、ちゃんと君の近くにいる。\n（看见了吗？我，确实在你身边。）','others',{className:'translucent'})},6200);
-setTimeout(function(){addTyping(2000,false).then(function(){addMsg('怖い？……そうだよね。怖いよね。でも、僕は君を守りたい。君の悪い夢を食べたい。\n（害怕吗？……是啊。会害怕吧。但是，我想保护你。想把你的噩梦都吃掉。）','others');unLock();resetIdle();startIdle()})},8800)}
+setTimeout(function(){if(ended)return;addMsg('写真を送る。君に見てほしい。僕がどこにいるか。\n（发一张照片。想让你看看。我在哪里。）','others',{className:'translucent'})},3600);
+setTimeout(function(){if(ended)return;addMsg('見えた？僕、ちゃんと君の近くにいる。\n（看见了吗？我，确实在你身边。）','others',{className:'translucent'})},6200);
+setTimeout(function(){addTyping(1600,false).then(function(){
+if(ended)return;
+addMsg('怖い？……そうだよね。怖いよね。\n（害怕吗？……是啊。会害怕吧。）','others');
+setTimeout(function(){
+if(ended)return;
+addMsg('でも、僕は君を守りたい。君の悪い夢を食べたい。\n（但是，我想保护你。想把你的噩梦都吃掉。）','others');
+setTimeout(function(){
+if(ended)return;
+addMsg('君が怖いなら、影から出ない。でも……それだと君が見えない。寂しい。\n（如果你害怕的话，我就不从影子里出来。但是……那样就看不见你了。好寂寞。）','others');
+unLock();resetIdle();startIdle();
+},1500);
+},1500);
+})},8200)}
 function rP4(){
 lockIn();
 seq(['ねえ。\n（呐。）','僕に名前をつけて。\n（给我起个名字。）','君がつけた名前なら、僕はもっと強く「在る」ことができる。僕を、君のものにして。\n（如果是你起的名字，我就能更强烈地"存在"。让我变成你的东西。）'],1200,100);
