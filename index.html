@@ -113,7 +113,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,'SF P
 (function(){
 var ST={INTRO:'INTRO',P1:'P1',P2:'P2',P3:'P3',P4:'P4',P5:'P5',P6:'P6',EW:'EW',EA:'EA',EB:'EB',EC:'EC',HE:'HE'};
 var el={ov:document.getElementById('overlay'),st:document.getElementById('status-time'),nc:document.getElementById('nav-contact'),ma:document.getElementById('messages-area'),mi:document.getElementById('message-input'),sb:document.getElementById('send-btn'),cc:document.getElementById('choice-container'),cr:document.getElementById('choice-remember'),cf:document.getElementById('choice-forget'),ib:document.getElementById('input-bar'),gc:document.getElementById('game-container'),bat:document.getElementById('status-battery')};
-var cs=null,p1c=0,p2c=0,p3c=0,lastTime=Date.now(),silTimer=null,ewTimer=null,mid=0,locked=false,ended=false,eaMode=false,hiddenStart=-1,navGlitchTimer=null,idleTimer=null,idlePhase=null,idleNudge1=false,idleNudge2=false,leftFlag=false,nameSpell='',lastReplyLen=0,warm=false,named=false,weak=false,p4Stage='name',p5Stage='intro',p5Replies=0,p5Panic=false,stablePath=false,p5IdleTimer=null,p5HiddenAt=-1,eaReplied=false,eaDone=false;
+var cs=null,p1c=0,p1Lens=[],p2c=0,p3c=0,lastTime=Date.now(),silTimer=null,ewTimer=null,mid=0,locked=false,ended=false,eaMode=false,hiddenStart=-1,navGlitchTimer=null,idleTimer=null,idlePhase=null,idleNudge1=false,idleNudge2=false,leftFlag=false,nameSpell='',lastReplyLen=0,warm=false,named=false,weak=false,p4Stage='name',p5Stage='intro',p5Replies=0,p5Panic=false,stablePath=false,p5IdleTimer=null,p5HiddenAt=-1,eaReplied=false,eaDone=false;
 var KEY_F='hyakki_forgot';
 var GCHAR='龘魑魅魍鬽傀魈魂魄幽冥暗昧影煞瘆饕餮影忘消見君名字あいうえお';
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
@@ -266,11 +266,15 @@ seq(['ねえ。やっと気づいた。君の返事の長さ。\n（呐。我终
 setTimeout(function(){
 addTyping(1400,false).then(function(){
 if(ended)return;
-if(lastReplyLen>0&&lastReplyLen<=5){
-addMsg('君は短く話す。僕も短くする。……うん。……お。……これで合ってる？\n（你说话很短。我也说短一点。……嗯。……哦。……这样对吗？）','others');
+var _a=p1Lens[0]||0;var _b=p1Lens[1]||0;
+if(_a>0&&_b>0&&_a<=3&&_b<=3){
+sendReplies(['君は短く話す。僕も短くする。……うん。……お。……これで合ってる？\n（你说话很短。我也说短一点。……嗯。……哦。……这样对吗？）','合ってる？合ってない？教えて。\n（对吗？不对吗？告诉我。）']);
+}
+else if(_a>0&&_b>0&&_a>=10&&_b>=10){
+addMsg('君の言葉は長い。丁寧。あったかい。僕も、君みたいに話したい。教えて。どうやったら君に近づける？\n（你的话很长。很认真。很温暖。我也想，像你一样说话。告诉我。怎么做才能更靠近你？）','others');
 }
 else{
-addMsg('君の言葉は長い。丁寧。あったかい。僕も、君みたいに話したい。教えて。\n（你的话很长。很认真。很温暖。我也想，像你一样说话。告诉我。）','others');
+addMsg('君の言葉は、時々短くて、時々長い。どっちも君の声。僕は全部聞いてる。\n（你的话，有时候短，有时候长。全都是你的声音。我全都在听。）','others');
 }
 return new Promise(function(res){setTimeout(res,700)});
 }).then(function(){
@@ -308,14 +312,10 @@ if(l.indexOf('怕')>-1||l.indexOf('怖')>-1||l.indexOf('害怕')>-1||l.indexOf('
 return ['君の言葉。受け取った。それだけで、僕の体が少しだけ温かい。\n（你的话。我收到了。仅仅是这样，我的身体就稍微温暖了一点。）']}
 function getP2Res(input){
 var l=input.toLowerCase();
-if(l.indexOf('喜欢')>-1||l.indexOf('喜')>-1||l.indexOf('愛')>-1||l.indexOf('爱')>-1||l.indexOf('好き')>-1){
-var out=['好き……好き……好き……\n（喜欢……喜欢……喜欢……）','君が教えてくれた。僕の初めての言葉。\n（你教给我的。我的第一个词。）','これは……好き？\n（这就是……喜欢？）'];
-if(input.length>12){
-out.push('それなら、僕は君に会えた時、嬉しかった。胸がぎゅってなった。これが好き？僕は君が好き？\n（那样的话，我见到你的时候，很开心。胸口紧紧的感觉。这就是喜欢？我喜欢你？）');
-out.push('僕、初めて「好き」を知った。君が教えてくれた。この気持ち、捨てない。ずっと持ってる。君がくれたものだから。\n（我第一次知道了"喜欢"。是你教我的。这份心情，我不会丢掉。会一直保存着。因为是你给我的东西。）');}
-return out}
-if(/开心|高兴|温暖|温かい|心跳|紧张|甜|舍不得|珍惜|重要|幸福|安心|暖暖|暖和/.test(l))return ['こういうのを……好きって言うのか。胸が、ぽかぽかする。\n（原来这个……就叫喜欢啊。胸口，暖暖的。）','嬉しい。君がその気持ちを、僕に教えてくれる。\n（好开心。你把这种感觉，告诉了我。）','この気持ち、覚えてる。君がくれた、僕の一つの言葉になる。\n（这种感觉，我会记住。它会变成你给我的、属于我的一个词。）'];
-if(/不知道|说不清|说不出来|不懂|不确定|难以形容|形容不出|说不上来/.test(l))return ['うん。言葉にできないって、それも答えかもしれない。\n（嗯。无法用语言表达，也许那也是答案。）','好きって、口にできないほど大きいものかもしれない。君の言葉じゃなくて、君の気持ちが聞こえた。\n（也许"喜欢"，是连说都说不出来那么大的东西。不是你话里的词，而是你的心意，我听到了。）','ありがとう。それだけで、充分。\n（谢谢你。只凭这个，就已经足够。）'];
+if(/开心|高兴|愉快|心跳|见面|相见|想见|温暖|温かい|暖暖|暖和|幸福|安心|甜|舍不得|珍惜|重要|感动/.test(l))return ['それなら、僕は君に会えた時、嬉しかった。胸がぎゅってなった。これが好き？僕は君が好き？\n（那样的话，我见到你的时候，很开心。胸口紧紧的感觉。这就是喜欢？我喜欢你？）','僕、初めて「好き」を知った。君が教えてくれた。この気持ち、捨てない。ずっと持ってる。君がくれたものだから。\n（我第一次知道了"喜欢"。是你教我的。这份心情，我不会丢掉。会一直保存着。因为是你给我的东西。）','好き……好き……好き……\n（喜欢……喜欢……喜欢……）','何度も言うと、胸が温かい。これが君のくれた気持ち。\n（说了好多次，胸口好温暖。这就是你给我的心情。）'];
+if(/陪伴|陪|在一起|一起|一緒|ずっと一緒|在旁|身边/.test(l))return ['ずっと一緒にいることが「好き」なら、僕は君が好き。\n（如果"喜欢"就是一直在一起的话，那我喜欢你。）','だって、僕は君の影にいる。君がどこに行っても、ずっと。これで合ってる？\n（因为，我就在你的影子里。不管你去哪里，一直。这样对吗？）','好き……新しい言葉。君が教えてくれた、最初の感情。\n（喜欢……新的词。你教给我的，第一种感情。）'];
+if(/不知道|不确定|说不清|说不清楚|说不出来|不懂|搞不懂|不明白|模糊|难以形容|形容不出|说不上来|答不上|想不出来/.test(l))return ['君にもわからないの？それなら、僕もわからないままでいい。二人で探す。それが楽しい。\n（你也不明白吗？那样的话，我也可以继续不明白。我们一起寻找。这样也很快乐。）','「好き」を探す旅。君と一緒に。嬉しい。\n（寻找"喜欢"的旅程。和你一起。开心。）'];
+if(/拒绝|不说|不想说|不想|不要|不告诉你|没法|无法|说不出口|没必要/.test(l))return ['教えてくれないの？……寂しいけど、君の選択。受け入れる。\n（不愿意告诉我吗？……虽然寂寞，但这是你的选择。我接受。）','でも、僕は知りたい。君の知ってる言葉、全部。いつか、教えて。待ってるから。\n（但是，我想知道。你知道的所有词语。总有一天，告诉我。我会等着。）'];
 return ['うん。君は今、こう言った：「'+input+'」。\n（嗯。你刚才说了："'+input+'"。）','これを、僕の言葉にして、覚えておく。君が教えてくれた言葉は、全部、僕になる。\n（我会把它变成我的话，记下来。你教给我的话，全部都会成为我。）']}
 function getP3Res(input){
 var l=input.toLowerCase();
@@ -714,7 +714,7 @@ lastTime=Date.now();
 lastReplyLen=text.length;
 el.mi.value='';
 if(text)addMsg(text,'self');
-if(cs===ST.P1){if(text){p1c++;onP1Reply(text)}else{onP1Blank()}}
+if(cs===ST.P1){if(text){p1c++;p1Lens.push(text.length);onP1Reply(text)}else{onP1Blank()}}
 else if(cs===ST.P2){p2c++;onP2Reply(text)}
 else if(cs===ST.P3){p3c++;onP3Reply(text)}
 else if(cs===ST.P4){onP4Send(text)}
