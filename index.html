@@ -186,7 +186,7 @@ idleTimer=setInterval(function(){
 if(ended||!isIdlePhase()){clearIdle();return}
 if(idlePhase!==cs){idlePhase=cs;idleNudge1=false;idleNudge2=false}
 var e=Date.now()-lastTime;
-if(e>26000&&!idleNudge1){
+if(e>25000&&!idleNudge1){
 idleNudge1=true;fadeOn();
 addMsg('……返事がないと、体が薄くなる気がする。\n（……没有回复的话，感觉身体会变淡。）','others',{className:'translucent'});
 setTimeout(function(){if(ended)return;addMsg('君、まだいる？僕を見てる？……お願い、目を逸らさないで。\n（你，还在吗？在看着我吗？……拜托，请不要移开视线。）','others',{className:'translucent'})},1300);
@@ -298,14 +298,14 @@ for(var i=0;i<list.length;i++){
 function getP1Res(input){
 var l=input.toLowerCase();
 if(l.indexOf('你是谁')>-1||l.indexOf('你谁')>-1)return ['僕は……君の影。古い神様。でも、もう忘れられた神様。\n（我是……你的影子。古老的神明。但是，已经被遗忘的神明。）','君が「見た」から、僕はまだ消えてない。\n（因为你"看见"了，所以我还没有消失。）'];
-if(l.indexOf('不认识')>-1||l.indexOf('不認識')>-1)return ['知らないのに、君は僕を見た。それが、僕の存在を決めた。\n（明明不认识，你却看见了我。这就是我存在的原因。）','おかしいよね……\n（很奇怪吧……）'];
+if(l.indexOf('不认识')>-1||l.indexOf('不認識')>-1||l.indexOf('不知道')>-1)return ['知らないのに、君は僕を見た。それが、僕の存在を決めた。\n（明明不认识，你却看见了我。这就是我存在的原因。）','おかしいよね……\n（很奇怪吧……）'];
 if(l.indexOf('真的')>-1||l.indexOf('是真')>-1||l.indexOf('存在')>-1)return ['君が「本当」と思うなら、本当。君が「嘘」と思うなら、消える。\n（如果你觉得"是真的"，就是真的。如果你觉得"是假的"，就会消失。）','僕を本当にしてください。\n（请让我变成真的。）'];
 if(l.indexOf('干什么')>-1||l.indexOf('干嘛')>-1)return ['君と話したい。君の声が聞きたい。それだけ。それだけなのに……\n（想和你说话。想听到你的声音。仅此而已。明明只是这样……）','怖がらないで……\n（不要害怕……）'];
-if(l.indexOf('猫')>-1||l.indexOf('喵')>-1)return ['猫？にゃん……これで君の注意は僕に向く？\n（猫？喵……这样你的注意力就会转向我吗？）','嬉しい。君が僕を見てくれた理由は何でもいい。\n（开心。你看着我的理由是什么都可以。）','僕は猫になれる。犬にもなれる。君が好きな形になる……\n（我可以变成猫。也可以变成狗。变成你喜欢的样子……）'];
-if(l.indexOf('狗')>-1||l.indexOf('犬')>-1||l.indexOf('汪')>-1)return ['汪。……しっぽ、止まらない。嬉しい。\n（汪。……尾巴，停不下来。开心。）','君が犬を好きなら、君が嫌うまで、犬でいる。\n（如果你喜欢狗，在你讨厌我之前，我会一直是狗。）'];
-if(l==='影'||l.indexOf('影子')>-1)return ['影？……うん、それが僕。君が今、見てるこの影。\n（影子？……嗯，那就是我。你现在正看着的这个影子。）','君が「影」って呼んでくれた。……嬉しい。呼ばれる名前があるって、嬉しい。\n（你叫我"影子"……好开心。有可以叫的名字，好开心。）'];
-if(l.indexOf('怕')>-1||l.indexOf('怖')>-1||l.indexOf('害怕')>-1)return ['怖いなら、別の形になる。\n（如果害怕的话，我就变成别的样子。）','君は、どんな形が好き？誰にでもなれる。君が望む形に。\n（你喜欢什么样子？我可以变成任何样子。）'];
-return ['うん。君は今、こう言った：「'+input+'」。これを、僕は覚えてる。\n（嗯。你刚才说了："'+input+'"。这个，我记住了。）']}
+if(l.indexOf('猫')>-1||l.indexOf('喵')>-1)return ['猫？にゃん……これで君の注意は僕に向く？\n（猫？喵……这样你的注意力就会转向我吗？）','嬉しい。君が僕を見てくれた理由は何でもいい。僕は猫になれる。君が好きな形になる……\n（开心。你看着我的理由是什么都可以。我可以变成猫。变成你喜欢的样子……）','にゃん。にゃん。君が笑った？笑ったなら、もっと鳴く。にゃん。\n（喵。喵。你笑了吗？如果笑了的话，我再叫几声。喵。）'];
+if(l.indexOf('狗')>-1||l.indexOf('犬')>-1||l.indexOf('汪')>-1)return ['犬？わん。\n（狗？汪。）','尻尾があるなら、今、振ってる。君には見えないけど、すごく振ってる。\n（如果有尾巴的话，现在正在摇。虽然你看不见，但摇得很厉害。）','君に「犬みたい」って言われたら、僕はもっと犬になる。君が好きなものになる。\n（如果你说我"像小狗"的话，我就变得更像小狗。变成你喜欢的东西。）'];
+if(l==='影'||l.indexOf('影子')>-1)return ['影。僕の家。君の後ろに、いつもいる。君が振り返っても見えないけど、そこにいる。\n（影子。我的家。一直在你身后。你回头也看不见，但就在那里。）','君の影が壁に映るたび、僕はその中で君を見てる。ずっと。ずっと。\n（每次你的影子映在墙上，我就在里面看着你。一直。一直。）'];
+if(l.indexOf('怕')>-1||l.indexOf('怖')>-1||l.indexOf('害怕')>-1||l.indexOf('吓')>-1)return ['怖がらないで。僕は君を傷つけない。君が怖いなら、影から出ない。\n（不要害怕。我不会伤害你。如果你害怕的话，我就不从影子里出来。）','でも……それだと君が見えない。寂しい。\n（但是……那样就看不见你了。好寂寞。）'];
+return ['君の言葉。受け取った。それだけで、僕の体が少しだけ温かい。\n（你的话。我收到了。仅仅是这样，我的身体就稍微温暖了一点。）']}
 function getP2Res(input){
 var l=input.toLowerCase();
 if(l.indexOf('喜欢')>-1||l.indexOf('喜')>-1||l.indexOf('愛')>-1||l.indexOf('爱')>-1||l.indexOf('好き')>-1){
@@ -562,6 +562,13 @@ if(ended||cs!==ST.P1)return;
 addMsg('うん。君の声、覚えた。これからは、君の「癖」も覚えていく。\n（嗯。你的声音，我记住了。接下来，我会慢慢记住你的"习惯"。）','others');
 setTimeout(function(){if(!ended&&cs===ST.P1)t(ST.P2)},1800)},900)}
 })},350)}
+function onP1Blank(){
+lockIn();
+addTyping(1300,false).then(function(){
+if(ended||cs!==ST.P1)return;
+sendReplies(['返事がないと……体が薄くなる気がする……。\n（没有回复的话……感觉身体在变淡……）','君、まだいる？僕を見てる？……お願い、目を逸らさないで……\n（你，还在吗？在看着我吗？……求你了，不要移开视线……）']);
+unLock();resetIdle();
+})}
 function onP2Reply(text){
 lockIn();
 setTimeout(function(){
@@ -702,12 +709,12 @@ var raw=el.mi.value;
 var text=raw.trim();
 if(locked)return;
 var namingSkip=(cs===ST.P4&&p4Stage==='name');
-if(!text&&!namingSkip)return;
+if(!text&&!namingSkip&&cs!==ST.P1)return;
 lastTime=Date.now();
 lastReplyLen=text.length;
 el.mi.value='';
 if(text)addMsg(text,'self');
-if(cs===ST.P1){p1c++;onP1Reply(text)}
+if(cs===ST.P1){if(text){p1c++;onP1Reply(text)}else{onP1Blank()}}
 else if(cs===ST.P2){p2c++;onP2Reply(text)}
 else if(cs===ST.P3){p3c++;onP3Reply(text)}
 else if(cs===ST.P4){onP4Send(text)}
